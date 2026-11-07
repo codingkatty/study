@@ -1,0 +1,12 @@
+---
+const { subject, topic } = Astro.props;
+---
+
+<div>
+    <a href=`subjects/${subject}`>{subject}</a>
+    <div style="padding-left: 20px;">
+        {topic.map((e: string) => {
+            return <a href={`subjects/${subject}/${e}`}>{e}</a><br />
+        })}
+    </div>
+</div>

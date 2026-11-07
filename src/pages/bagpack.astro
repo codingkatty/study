@@ -1,0 +1,91 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+    <h1>tool that might be used for bags</h1>
+    <input style="margin-right: 5px;" placeholder="paste your timetable here" id="timetable-input" />
+    <button id="timetable-send">update (sends to ai)</button>
+    <br>
+    <br>
+    <table style="width: 100%; gap:30px;">
+        <tr>
+            <th>monday</th>
+            <th>tuesday</th>
+            <th>wednesday</th>
+            <th>thursday</th>
+            <th>friday</th>
+        </tr>
+        <tr>
+            <td id="monday" class="ttd"></td>
+            <td id="tuesday" class="ttd"></td>
+            <td id="wednesday" class="ttd"></td>
+            <td id="thursday" class="ttd"></td>
+            <td id="friday" class="ttd"></td>
+        </tr>
+    </table>
+
+    <script>
+        import { actions } from 'astro:actions';
+
+        const button = document.getElementById("timetable-send");
+        const input = document.getElementById("timetable-input") as HTMLInputElement;
+
+        const mon_t = document.getElementById("monday");
+        const tue_t = document.getElementById("tuesday");
+        const wed_t = document.getElementById("wednesday");
+        const thu_t = document.getElementById("thursday");
+        const fri_t = document.getElementById("friday");
+
+        function drawTimetable(data: string) {
+            const t = JSON.parse(data);
+
+            let monday = t.monday;
+            let tuesday = t.tuesday;
+            let wednesday = t.wednesday;
+            let thursday = t.thursday;
+            let friday = t.friday;
+
+            mon_t!.innerHTML = generateTimetableContent(friday, monday);
+            tue_t!.innerHTML = generateTimetableContent(monday, tuesday);
+            wed_t!.innerHTML = generateTimetableContent(tuesday, wednesday);
+            thu_t!.innerHTML = generateTimetableContent(wednesday, thursday);
+            fri_t!.innerHTML = generateTimetableContent(thursday, friday);
+        }
+
+        function generateTimetableContent(prev: [string], now: [string]) {
+            const toAdd = now.filter(item => !prev.includes(item));
+            const toRemove = prev.filter(item => !now.includes(item));
+            const inBoth = prev.filter(item => now.includes(item));
+
+            const add = toAdd.map(e => `+ ${e} <br>`).join('');
+            const remove = toRemove.map(e => `- ${e} <br>`).join('');
+            const keeping = inBoth.map(e => `= ${e} <br>`).join('');
+
+            return `<p style="color:#25a83a;">${add}</p><p style="color:#c92845;">${remove}</p><p>${keeping}</p>`;
+        }
+
+        const prevTimetable = localStorage.getItem("timetable")
+        console.log(prevTimetable)
+        if (prevTimetable != null) {
+            drawTimetable(prevTimetable);
+        }
+
+        button!.addEventListener('click', async () => {
+            console.log("meow")
+            if (input.value.trim() !== "") {
+                const { data, error } = await actions.timetableMake({ timetable: input.value });
+                if (!error) {
+                    localStorage.setItem("timetable", data)
+                    drawTimetable(data)
+                };
+            }
+        })
+    </script>
+</Layout>
+
+<style>
+    .ttd {
+        vertical-align: top;
+    }
+</style>

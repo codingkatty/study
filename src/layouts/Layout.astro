@@ -1,3 +1,8 @@
+---
+import { Font } from "astro:assets";
+import NoteCatag from '../components/NoteCatag.astro';
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -6,18 +11,69 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>study thing</title>
+		<Font cssVariable="--font-pixel32" />
 	</head>
 	<body>
-		<slot />
+		<div class="layout-wrapper">
+			<nav id="navbar">
+				<h2>study thing</h2>
+				<div>
+					<a href="/">notes</a>
+					<div style="padding-left: 20px;">
+						<NoteCatag 
+							subject="biology"
+							topic={["test1", "test2", "test3"]}
+						/>
+					</div>
+					<br>
+					<a href="bagpack">bag packer</a>
+				</div>
+			</nav>
+			<main id="content">
+				<slot />
+			</main>
+		</div>
+		
 	</body>
 </html>
 
 <style>
+	@font-face {
+		font-family: 'Pixel32';
+		src: url('../src/assets/Pixel32.v1.9.7.woff') format('woff');
+		font-weight: normal;
+		font-style: normal;
+		font-display: swap;
+	}
+
 	html,
 	body {
+		padding: 0;
 		margin: 0;
 		width: 100%;
 		height: 100%;
+		overflow: hidden;
+		font-family: "Pixel32";
+	}
+
+	#navbar {
+		height: 100vh;
+		background-color:#ffbce3;
+		padding: 20px;
+		box-sizing: border-box;
+	}
+	#content {
+		box-sizing: border-box;
+		height: 100vh;
+		overflow-y:auto;
+		margin-top: 50px;
+		padding-left: 15%;
+		padding-right: 15%;
+	}
+	.layout-wrapper {
+		display: grid;
+		grid-template-columns: 300px 1fr;
+		min-height: 100vh;
 	}
 </style>
